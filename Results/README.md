@@ -2,15 +2,11 @@
 ``` text
 Results
 ├── README.md
-├── RTL Simulation Result
-│   └── Post-sim_RTL_Result.png
-├── VLSI Implement (TSMC 90 nm 1P9M)
-│   ├── Area
-│   ├── Chip
-│   ├── LVS
-│   ├── Power
-│   └── Timing
-└── VLSI Implement (TSMC 16 nm ADFP)
+├── ATPG Result
+│   └── Stuck Fault Summary Report.png
+├── Post-sim Result
+│   └── Post-sim Result.png
+└── VLSI Implement 
     ├── Area
     ├── Chip
     ├── LVS
