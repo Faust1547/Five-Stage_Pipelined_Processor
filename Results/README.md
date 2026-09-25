@@ -14,7 +14,7 @@ Results
     └── Timing
 ```
 ## RTL Simulation
-透過 Testbench 驗證五階 Pipeline CPU 能否正確輸入外部資料至 IM 與 DM，依照指令執行對應運算，並且能透過 Hazard Detect與 Forwarding 設計應對 Data Hazard的狀況。
+透過 Testbench 驗證五級 Pipeline CPU 的外部指令與資料載入、指令執行及資料記憶體讀寫功能，並測試 Hazard Detection 與 Forwarding 機制，以確認處理器能正確處理資料相依問題。
 
 ## Physical Implementation
 | Specification | TSMC 90 nm 1P9M |
