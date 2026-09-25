@@ -1,3 +1,4 @@
+`timescale 1ns / 1ps
 module TOP #(
     parameter ADDR_LENGTH = 32,
     parameter DATA_LENGTH = 32
@@ -9,7 +10,11 @@ module TOP #(
     input  wire [DATA_LENGTH-1:0] ext_data,
     input  wire                   ext_we,
     input  wire                   mem_sel,
-    output wire [DATA_LENGTH-1:0] mem_out
+    output wire [DATA_LENGTH-1:0] mem_out,
+
+    input  wire                   SI,
+    input  wire                   SE,
+    output  wire                  SO
 );
     
 // Interface
@@ -202,7 +207,12 @@ wire        IM_enable;
 
 assign IM_byte_addr = Interface_test_normal ? Interface_ext_addr :
                       normal_start          ? 32'd0              : Instr_addr;
-assign IM_enable    = Interface_test_normal ? 1'b1 : (normal_start | PC_Write);
+// Disable the IM macro while the external interface is being used as the RF
+// DFT window. This avoids unnecessary black-box activity during RF ATPG access.
+assign IM_enable =
+    Interface_test_normal
+        ? ((Interface_ext_addr[31:30] == 2'b10) ? 1'b0 : 1'b1)
+        : (normal_start | PC_Write);
 
 IM_256_32 IM(
     .Q  (Instruction),
@@ -216,47 +226,73 @@ IM_256_32 IM(
 assign IF_ID_Instr = Instruction;
 
 // -----------------------------------------------------------------------------
-// DFT RF direct-access window
+// DFT RF override window
 // -----------------------------------------------------------------------------
-// Existing external pins are reused; no additional top-level pads are needed.
+// Reuse existing external pins; no new top-level pads.
 //
-// test_normal = 1:
-//   ext_addr[31:30] = 2'b00 -> IM external access (legacy behavior)
-//   ext_addr[31:30] = 2'b01 -> DM external access (legacy/selected below)
-//   ext_addr[31:30] = 2'b10 -> RF direct DFT access
+// RF test mode:
+//   test_normal      = 1
+//   ext_addr[31:30]  = 2'b10
 //
-// RF address : ext_addr[4:0]
-// RF write   : ext_we
-// RF wdata   : ext_data
-// RF rdata   : mem_out
+// Direct ATPG control of the ORIGINAL RF cones:
+//   ext_addr[4:0]    -> Rs address
+//   ext_addr[9:5]    -> Rt address
+//   ext_addr[14:10]  -> Rd/write address
+//   ext_data[31:0]   -> RF write data
+//   ext_we           -> RF write enable
 //
-// ATPG therefore gains direct PI control and PO observation of the RF,
-// instead of depending on IM.Q (a black-box output) for Rs/Rt selection.
+// Direct observation:
+//   ext_addr[29] = 0 -> mem_out = Rs_data
+//   ext_addr[29] = 1 -> mem_out = Rt_data
+//
+// Unlike the previous version, this does NOT add a third RF read port.
+// Instead it overrides the two original read mux select inputs and the original
+// write decoder so ATPG can directly control/observe the logic that previously
+// produced most RF ATPG-untestable faults.
 wire        RF_test_mode;
-wire [31:0] RF_test_rdata;
+wire [4:0]  RF_rs_addr;
+wire [4:0]  RF_rt_addr;
+wire [4:0]  RF_rd_addr;
+wire [31:0] RF_rd_data;
+wire        RF_we;
 
 assign RF_test_mode =
     Interface_test_normal &&
     (Interface_ext_addr[31:30] == 2'b10);
 
+assign RF_rs_addr =
+    RF_test_mode ? Interface_ext_addr[4:0]
+                 : IF_ID_Instr[25:21];
+
+assign RF_rt_addr =
+    RF_test_mode ? Interface_ext_addr[9:5]
+                 : IF_ID_Instr[20:16];
+
+assign RF_rd_addr =
+    RF_test_mode ? Interface_ext_addr[14:10]
+                 : MEM_WB_Rd_Addr;
+
+assign RF_rd_data =
+    RF_test_mode ? Interface_ext_data
+                 : MEM_WB_Rd_Data;
+
+assign RF_we =
+    RF_test_mode
+        ? Interface_ext_we
+        : ((Interface_test_normal)
+            ? 1'b0
+            : (MEM_WB_Reg_w & MEM_WB_valid));
+
 RF RF(
-    .clk(clk),
-    .rst_n(rst_n),
-
-    .Rs_addr(IF_ID_Instr[25:21]),
-    .Rt_addr(IF_ID_Instr[20:16]),
-    .Rd_addr(MEM_WB_Rd_Addr),
-    .Rd_data(MEM_WB_Rd_Data),
-    .we_signal((Interface_test_normal) ? 1'b0 : (MEM_WB_Reg_w & MEM_WB_valid)),
-
-    .Rs_data(Rs_data),
-    .Rt_data(Rt_data),
-
-    .test_mode (RF_test_mode),
-    .test_addr (Interface_ext_addr[4:0]),
-    .test_wdata(Interface_ext_data),
-    .test_we   (Interface_ext_we),
-    .test_rdata(RF_test_rdata)
+    .clk      (clk),
+    .rst_n    (rst_n),
+    .Rs_addr  (RF_rs_addr),
+    .Rt_addr  (RF_rt_addr),
+    .Rd_addr  (RF_rd_addr),
+    .Rd_data  (RF_rd_data),
+    .we_signal(RF_we),
+    .Rs_data  (Rs_data),
+    .Rt_data  (Rt_data)
 );
 
 Control Control(
@@ -386,11 +422,14 @@ wire [31:0] DM_byte_addr;
 wire [31:0] DM_write_data;
 
 assign DM_access = (Interface_test_normal)
-                 ? Interface_mem_sel
+                 ? (Interface_mem_sel &&
+                    (Interface_ext_addr[31:30] != 2'b10))
                  : (EX_MEM_valid & (EX_MEM_Mem_r | EX_MEM_Mem_w));
 
 assign DM_write = (Interface_test_normal)
-                ? (Interface_ext_we & Interface_mem_sel)
+                ? (Interface_ext_we &&
+                   Interface_mem_sel &&
+                   (Interface_ext_addr[31:30] != 2'b10))
                 : (EX_MEM_valid & EX_MEM_Mem_w);
 
 assign DM_byte_addr = (Interface_test_normal)
@@ -434,8 +473,8 @@ end
 // relative to MEM_WB_Rd_Addr / MEM_WB_Reg_w.
 assign MEM_WB_Rd_Data = MEM_WB_Mem_to_reg ? Mem_R_Data : MEM_WB_ALU_result;
 assign Interface_mem_out =
-    (RF_test_mode)
-        ? RF_test_rdata
+    RF_test_mode
+        ? (Interface_ext_addr[29] ? Rt_data : Rs_data)
         : (Interface_test_normal)
             ? ((Interface_mem_sel) ? Mem_R_Data : Instruction)
             : Mem_R_Data;

@@ -27,7 +27,7 @@ module tb_FinalCPU;
     integer error_count;
     integer dm_init_words;
 
-    FinalCPU UUT (
+    TOP UUT (
         .clk         (clk),
         .rst_n       (rst_n),
         .test_normal (test_normal),
@@ -69,8 +69,8 @@ module tb_FinalCPU;
 
         #1;
         $display("[TB] Loading 32-bit vector files ...");
-        $readmemh("/home/B11207001/Desktop/0901_CPU/Pipeline_CPU/9IM_32bit.txt",             im_image);
-        $readmemh("/home/B11207001/Desktop/0901_CPU/Pipeline_CPU/9DM_32bit.txt",             dm_image);
+        $readmemh("D:/data/9IM_32bit.txt",             im_image);
+        $readmemh("D:/data/9DM_32bit.txt",             dm_image);
         $readmemh("expected_DM_after_run.out", expected_dm);
         $readmemh("expected_RF_after_run.out", expected_rf);
 
