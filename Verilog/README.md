@@ -4,26 +4,21 @@
 
 ## Testbench
 
-`AES_TB.v`
+`tb_FinalCPU.v`
 
 ## Module Hierarchy
 
 ```text
 TOP.v
-└── Control_Unit_V2.v
-    ├── KeyExpansion.v
-    │   └── S_Box.v
-    ├── SubByte.v
-    │   └── S_Box.v
-    ├── ShiftRows.v
-    ├── MixColumns.v
-    │   └── MixColumnsUnit.v
-    ├── AddRoundKey.v
-    ├── InvSubByte.v
-    │   └── Inv_S_Box.v
-    ├── InvShiftRow.v
-    └── InvMixColumns.v
-        └── InvMixColumnsUnit.v
+├── Interface.v
+├── RF.v
+├── Control.v
+├── ALU_Control.v
+├── ALU.v
+├── Adder.v
+├── IM_256_32.v
+└── DM_256_32_rtl_top.v
+    └── DM_256_32.v
 ```
 | Module | Description |
 |---|---|
