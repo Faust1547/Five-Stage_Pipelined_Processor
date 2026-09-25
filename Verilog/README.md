@@ -22,17 +22,13 @@ TOP.v
 ```
 | Module | Description |
 |---|---|
-| `TOP.v` | 最上層模組，負責整個系統與外部資料、訊號溝通 |
-| `Control_Unit_V2.v` | 負責控制系統運作狀態與加密或解密模式選擇訊號 |
-| `KeyExpansion.v` | 依 AES-128 Key Schedule 產生各回合金鑰，供加密及解密流程使用 |
-| `SubByte.v` | 將資料送入 S_Box 中轉換 |
-| `ShiftRows.v` | 依 AES 規則對 State Matrix 各列進行循環位移 |
-| `MixColumns.v` | 將 State Matrix 分組為四個 Column，整合子運算單元以完成 MixColumns 轉換 |
-| `MixColumnsUnit.v` | 執行單一 Column 的 GF(2⁸) 矩陣運算 |
-| `AddRoundKey.v` | 負責將回合金鑰與當前資料進行 XOR 運算 |
-| `InvSubByte.v` | 將資料送入 Inv_S_Box 中逆轉換 |
-| `InvShiftRow.v` | 依反向規則對 State Matrix 各列進行循環位移 |
-| `InvMixColumns.v` | 整合反向列混合運算單元，完成 InvMixColumns 轉換 |
-| `InvMixColumnsUnit.v` | 執行單一 Column 的反向 GF(2⁸) 矩陣運算 |
-| `S_Box.v` | 實現 AES S-Box 查找表，進行非線性位元組替換 |
-| `Inv_S_Box.v` | 實現 Inverse S-Box 查找表，進行反向位元組替換 |
+| `TOP.v` | 最上層模組 |
+| `Interface.v` | 負責連接外部與內部資料的輸出入介面 |
+| `RF.v` | 檔案暫存器 |
+| `Control.v` | 根據當前指令類型輸出對應的 Reg_dst、Reg_w、ALU_src、ALU_op、Mem_w、Mem_r、Mem_to_reg 訊號|
+| `ALU_Control.v` | 根據當前指令類型輸出對應的 addu、addiu、subu、subiu、sll、or 運算指令 |
+| `ALU.v` | 運算邏輯單元 |
+| `Adder.v` | 負責計算 PC 位址 |
+| `IM_256_32.v` | IM SRAM IP |
+| `DM_256_32_rtl_top.v` | RTL wrapper for DM SRAM IP |
+| `DM_256_32.v` | DM SRAM IP  |
