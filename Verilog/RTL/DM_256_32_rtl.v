@@ -37,7 +37,7 @@
 `timescale 1ns/1ps
 
  
-module DM_256_32_rtl(
+module DM_256_32_rtl_top(
    Q,
    CLK,
    CEN,
