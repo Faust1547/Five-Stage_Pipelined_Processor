@@ -31,7 +31,6 @@ reg  [ADDR_LENGTH-1:0] Instr_addr;
 wire [DATA_LENGTH-1:0] Instruction;
 
 // IF_ID_RF
-// IM.Q is used directly as the IF/ID instruction (synchronous ROM output register).
 wire [DATA_LENGTH-1:0] IF_ID_Instr;
 wire [DATA_LENGTH-1:0] Rt_data;
 wire [DATA_LENGTH-1:0] Rs_data;
@@ -191,24 +190,13 @@ Adder Adder(
     .Instr_addr(Instr_addr),
     .Next_PC(Next_PC)
 );
-/*
-IM IM(
-    .clk(clk),
-    .rst_n(rst_n),
-    .instr_addr((Interface_test_normal) ? Interface_ext_addr : Instr_addr),
-    .Interface_ext_data(Interface_ext_data),
-    .we_signal(Interface_test_normal & Interface_ext_we & !Interface_mem_sel),
-    .Instruction(Instruction)
-);*/
-// The ROM is synchronous: its Q already acts as the IF/ID instruction register.
-// During a load-use stall, disable the ROM so Q holds the current instruction.
+
 wire [31:0] IM_byte_addr;
 wire        IM_enable;
 
 assign IM_byte_addr = Interface_test_normal ? Interface_ext_addr :
                       normal_start          ? 32'd0              : Instr_addr;
-// Disable the IM macro while the external interface is being used as the RF
-// DFT window. This avoids unnecessary black-box activity during RF ATPG access.
+
 assign IM_enable =
     Interface_test_normal
         ? ((Interface_ext_addr[31:30] == 2'b10) ? 1'b0 : 1'b1)
@@ -221,34 +209,9 @@ IM_256_32 IM(
     .A  (IM_byte_addr[9:2])
 );
 
-// No extra IF/ID data register is needed: adding one here would add another cycle
-// on top of the synchronous ROM latency.
+
 assign IF_ID_Instr = Instruction;
 
-// -----------------------------------------------------------------------------
-// DFT RF override window
-// -----------------------------------------------------------------------------
-// Reuse existing external pins; no new top-level pads.
-//
-// RF test mode:
-//   test_normal      = 1
-//   ext_addr[31:30]  = 2'b10
-//
-// Direct ATPG control of the ORIGINAL RF cones:
-//   ext_addr[4:0]    -> Rs address
-//   ext_addr[9:5]    -> Rt address
-//   ext_addr[14:10]  -> Rd/write address
-//   ext_data[31:0]   -> RF write data
-//   ext_we           -> RF write enable
-//
-// Direct observation:
-//   ext_addr[29] = 0 -> mem_out = Rs_data
-//   ext_addr[29] = 1 -> mem_out = Rt_data
-//
-// Unlike the previous version, this does NOT add a third RF read port.
-// Instead it overrides the two original read mux select inputs and the original
-// write decoder so ATPG can directly control/observe the logic that previously
-// produced most RF ATPG-untestable faults.
 wire        RF_test_mode;
 wire [4:0]  RF_rs_addr;
 wire [4:0]  RF_rt_addr;
@@ -403,19 +366,7 @@ always @(posedge clk) begin:EX_MEM_STAGE
         EX_MEM_Mem_to_reg <= ID_EX_Mem_to_reg;
     end
 end
-/*
-DM DM(
-    .clk(clk),
-    .rst_n(rst_n),
-    .Mem_addr((Interface_test_normal) ? Interface_ext_addr : EX_MEM_ALU_result),
-    .Mem_w_data((Interface_test_normal) ? Interface_ext_data : Mem_W_Data),
-    .DM_we((Interface_test_normal) ? (Interface_ext_we & Interface_mem_sel) : (EX_MEM_Mem_w & EX_MEM_valid)),
-    .DM_re((Interface_test_normal) ? 1'b1 : EX_MEM_Mem_r),
-    .Mem_r_data(Mem_R_Data)
-    );
-*/
 
-// CPU uses 32-bit byte addresses; the 256x32 SRAM uses an 8-bit word address.
 wire        DM_access;
 wire        DM_write;
 wire [31:0] DM_byte_addr;
@@ -440,7 +391,7 @@ assign DM_write_data = (Interface_test_normal)
                      ? Interface_ext_data
                      : Mem_W_Data;
 
-DM_256_32_rtl DM (
+DM_256_32_rtl_top DM (
     .Q   (Mem_R_Data),
     .CLK (clk),
     .CEN (~DM_access),       // active-low chip enable
