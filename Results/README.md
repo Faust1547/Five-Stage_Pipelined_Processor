@@ -26,3 +26,10 @@ Results
 | Core Area | 738,807.679 μm² | 
 | Chip Area | 1,630,160.620 μm² | 
 | LVS | Correct |
+
+## ATPG Stuck Fault Summary Report
+| Specification | Result |
+|---|---|
+| Total Faults | 52826 |
+| Test Coverage | 95.87 % |
+| Fault Coverage | 93.40 % | 
