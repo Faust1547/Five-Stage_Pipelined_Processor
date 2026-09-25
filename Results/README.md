@@ -5,7 +5,7 @@ Results
 ├── ATPG Result
 │   └── Stuck Fault Summary Report.png
 ├── Post-sim Result
-│   └── Post-sim Result.png
+│   └── README.md
 └── VLSI Implement 
     ├── Area
     ├── Chip
@@ -14,15 +14,15 @@ Results
     └── Timing
 ```
 ## RTL Simulation
-透過 Testbench 驗證 AES-128 加密與解密功能，比對預期結果與實際輸出，並展示六組測試案例之 Post-simulation 通過結果。
+透過 Testbench 驗證五階 Pipeline CPU 能否正確輸入外部資料至 IM 與 DM，依照指令執行對應運算，並且能透過 Hazard Detect與 Forwarding 設計應對 Data Hazard的狀況。
 
 ## Physical Implementation
-| Specification | TSMC 90 nm 1P9M | TSMC N16 ADFP |
-|---|---|---|
-| Frequency | 200 MHz | 1.25 GHz |
-| Timing Closure | Setup / Hold Met | Setup / Hold Met|
-| Dynamic Power | 17.7559 mW | 10.6 mW |
-| Cell Leakage Power | 461.4556 μW | 0.582 μW | 
-| Core Area | 557,343.647 μm² | 10,777.54 μm² |
-| Chip Area | 1,044,749.730 μm² | 21,025.00 μm² |
-| LVS | Correct | Correct |
+| Specification | TSMC 90 nm 1P9M |
+|---|---|
+| Frequency | 200 MHz |
+| Timing Closure | Setup / Hold Met |
+| Dynamic Power | 50.7013 mW | 
+| Cell Leakage Power | 635.2643 µW |  
+| Core Area | 738,807.679 μm² | 
+| Chip Area | 1,630,160.620 μm² | 
+| LVS | Correct |
