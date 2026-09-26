@@ -23,7 +23,7 @@ TOP.v
 | Module | Description |
 |---|---|
 | `TOP.v` | 整合五級 Pipeline CPU、記憶體與外部資料介面 |
-| `Interface.v` | 負責外部資料與 CPU 內部訊號的介面控制，整合 Hazard Detection 與 Forwarding 機制|
+| `Interface.v` | 負責外部資料介面控制，並整合 Hazard Detection 與 Forwarding 邏輯|
 | `RF.v` | 暫存器檔案（Register File），負責暫存器資料讀寫 |
 | `Control.v` | 根據指令欄位產生暫存器、ALU 與記憶體操作所需的控制訊號|
 | `ALU_Control.v` | 根據指令及 ALU 控制訊號決定執行的運算 |
