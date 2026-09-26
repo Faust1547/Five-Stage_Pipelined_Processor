@@ -22,13 +22,13 @@ TOP.v
 ```
 | Module | Description |
 |---|---|
-| `TOP.v` | 最上層模組 |
-| `Interface.v` | 負責連接外部與內部資料的輸出入介面 |
-| `RF.v` | 檔案暫存器 |
-| `Control.v` | 根據當前指令類型輸出對應的 Reg_dst、Reg_w、ALU_src、ALU_op、Mem_w、Mem_r、Mem_to_reg 訊號|
-| `ALU_Control.v` | 根據當前指令類型輸出對應的 addu、addiu、subu、subiu、sll、or 運算指令 |
-| `ALU.v` | 運算邏輯單元 |
-| `Adder.v` | 負責計算 PC 位址 |
-| `IM_256_32.v` | IM SRAM IP |
-| `DM_256_32_rtl_top.v` | RTL wrapper for DM SRAM IP |
-| `DM_256_32.v` | DM SRAM IP  |
+| `TOP.v` | 整合五級 Pipeline CPU、記憶體與外部資料介面 |
+| `Interface.v` | 負責外部資料與 CPU 內部訊號的介面控制，整合 Hazard Detection 與 Forwarding 機制|
+| `RF.v` | 暫存器檔案（Register File），負責暫存器資料讀寫 |
+| `Control.v` | 根據指令欄位產生暫存器、ALU 與記憶體操作所需的控制訊號|
+| `ALU_Control.v` | 根據指令及 ALU 控制訊號決定執行的運算 |
+| `ALU.v` | 執行算術及邏輯運算 |
+| `Adder.v` | 計算下一個 PC 位址 |
+| `IM_256_32.v` | 256 × 32-bit Instruction Memory |
+| `DM_256_32_rtl_top.v` | Data Memory SRAM IP 的 RTL Wrapper |
+| `DM_256_32.v` | 256 × 32-bit Data Memory  |
