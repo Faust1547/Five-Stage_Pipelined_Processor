@@ -11,7 +11,7 @@
 ### 3. Verification Summary
 <img width="545" height="111" alt="image" src="https://github.com/user-attachments/assets/9de9ee7e-3dd1-4645-88a0-60ed06edaf4e" />
 
-# Instruction - Load-use Hazard Case
+# Load-Use Hazard Test Case
 ``` text
 lw $1, 0($0)
 add  $2, $1, $1
