@@ -5,6 +5,9 @@ Results
 ├── ATPG Result
 │   └── Stuck Fault Summary Report.png
 ├── Post-sim Result
+│   ├── Input Data
+│   ├── Output Data
+│   ├── Verification Data
 │   └── README.md
 └── VLSI Implement 
     ├── Area
@@ -13,7 +16,7 @@ Results
     ├── Power
     └── Timing
 ```
-## RTL Simulation
+## Post-sim Result
 透過 Testbench 驗證五級 Pipeline CPU 的外部指令與資料載入、指令執行及資料記憶體讀寫功能，並測試 Hazard Detection 與 Forwarding 機制，以確認處理器能正確處理資料相依問題。
 
 ## Physical Implementation
