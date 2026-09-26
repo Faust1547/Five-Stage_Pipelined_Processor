@@ -11,6 +11,13 @@
 ### 3. Verification Result
 <img width="545" height="111" alt="image" src="https://github.com/user-attachments/assets/9de9ee7e-3dd1-4645-88a0-60ed06edaf4e" />
 
+# Instruction
+``` text
+lw $1, 0($0)
+add  $2, $1, $1
+sw $2, 4($0)
+```
+
 # Input Data
 | Data Type | Data Name |
 |---|---|
