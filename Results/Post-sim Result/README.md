@@ -11,20 +11,27 @@
 ### 3. Verification Summary
 <img width="545" height="111" alt="image" src="https://github.com/user-attachments/assets/9de9ee7e-3dd1-4645-88a0-60ed06edaf4e" />
 
-# Instruction
+# Instruction - Load-use Hazard Case
 ``` text
 lw $1, 0($0)
 add  $2, $1, $1
 sw $2, 4($0)
 ```
+## Load-Use Hazard Verification
+本測試使用連續的 Load、Add 與 Store 指令，驗證 Hazard Detection 與 Forwarding 機制能否正確處理資料相依，避免後續指令使用尚未更新的暫存器資料。
+|Dependency|	Expected Behavior|
+|---|---|
+|lw → add	|偵測 Load-use Hazard，插入必要的 Stall，待資料可用後透過 Forwarding 提供給 ALU|
+|add → sw	|將更新後的 $2 傳遞至 Store 指令，確保寫入資料正確|
 
-# Input Data
+
+## Input Data
 | Data Type | Data Name |
 |---|---|
 | Instruction input file | `IM_32bit.txt ` |
 | Data Memory input file | `DM_32bit.txt ` |
 
-# Verification Data
+## Verification Data
 | Data Type | Data Name |
 |---|---|
 | Data Memory  | `expected_DM.dat ` |
@@ -32,7 +39,7 @@ sw $2, 4($0)
 | Write Back Data  | `expected_WB.dat` |
 | Store Word Data | `expected_SW.dat` |
 
-# Output Data
+## Output Data
 | Data Type | Data Name |
 |---|---|
 | Data Memory Output file | `DM_out.dat` |
