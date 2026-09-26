@@ -46,13 +46,7 @@ module tb_FinalCPU;
         forever #(CLK_PERIOD/2) clk = ~clk;
     end
 
-    // ------------------------------------------------------------
-    // Load 32-bit vector files.
-    //
-    // IM_32bit.dat : one 32-bit instruction per line, hexadecimal.
-    // DM_32bit.dat : one 32-bit data word per line, hexadecimal.
-    // expected_*.out use the same one-word-per-line format.
-    // ------------------------------------------------------------
+ 
     initial begin : LOAD_VECTOR_FILES
         for (i = 0; i < IM_WORDS; i = i + 1)
             im_image[i] = 32'b0;
@@ -69,14 +63,11 @@ module tb_FinalCPU;
 
         #1;
         $display("[TB] Loading 32-bit vector files ...");
-        $readmemh("D:/data/9IM_32bit.txt",             im_image);
-        $readmemh("D:/data/9DM_32bit.txt",             dm_image);
+        $readmemh("D:/data/IM_32bit.txt",             im_image);
+        $readmemh("D:/data/DM_32bit.txt",             dm_image);
         $readmemh("expected_DM_after_run.out", expected_dm);
         $readmemh("expected_RF_after_run.out", expected_rf);
 
-        // The generated instruction ROM has no write port, therefore for
-        // RTL functional simulation its contents are loaded hierarchically.
-        // Bits [33:32] are the compiler model's redundancy bits.
         for (i = 0; i < IM_WORDS; i = i + 1) begin
             UUT.IM.mem[i][31:0]  = im_image[i];
             UUT.IM.mem[i][33:32] = 2'bxx;
@@ -88,12 +79,7 @@ module tb_FinalCPU;
         $display("[TB] DM[1] = %08h", dm_image[1]);
     end
 
-    // ------------------------------------------------------------
-    // External test-interface access helpers.
-    // ext_addr is a BYTE address; SRAM A[7:0] is generated internally
-    // from ext_addr[9:2].  Stimulus changes only at negedge so that the
-    // synchronous SRAM sees stable inputs at the following posedge.
-    // ------------------------------------------------------------
+
     task write_dm_word;
         input [7:0]  word_addr;
         input [31:0] data;
@@ -105,8 +91,6 @@ module tb_FinalCPU;
             ext_addr    = {22'b0, word_addr, 2'b00};
             ext_data    = data;
 
-            // First posedge captures external interface signals.
-            // Second posedge performs the synchronous SRAM write.
             repeat (2) @(posedge clk);
             @(negedge clk);
             ext_we = 1'b0;
@@ -130,7 +114,7 @@ module tb_FinalCPU;
         end
     endtask
 
-    // Initialize the supplied DM image through the real SRAM write port.
+
     task initialize_dm;
         reg done;
         begin
@@ -138,8 +122,7 @@ module tb_FinalCPU;
             done = 1'b0;
             dm_init_words = 0;
             for (i = 0; (i < DM_WORDS) && !done; i = i + 1) begin
-                // $readmemh leaves entries not present in the file as X.
-                // Stop at the first unspecified word.
+ 
                 if (^dm_image[i] === 1'bx) begin
                     done = 1'b1;
                 end
