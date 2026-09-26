@@ -1,7 +1,7 @@
 # Five-Stage Pipelined Processor
 
 ## Overview
-本專案延伸課堂實作之五級 Pipeline CPU，將原先的 IM 與 DM 暫存器替換為實際 256 × 32 SRAM，並進一步導入 Design for Testability (DFT) 與 Scan Chain，使內部暫存器具備較佳的 Controllability 與 Observability，並透過 ATPG 進行 Stuck-at Fault 測試與 Fault Coverage 評估。
+本專案延伸課堂實作之五級 Pipeline CPU，將原先的 IM 與 DM 暫存器替換為實際 256 × 32 SRAM，並於後續合成導入 Design for Testability (DFT) 與 Scan Chain，使內部暫存器具備較佳的 Controllability 與 Observability，並透過 ATPG 進行 Stuck-at Fault 測試與 Fault Coverage 評估。
 
 ## Architecture
 
