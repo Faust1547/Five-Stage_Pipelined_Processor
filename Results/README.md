@@ -6,8 +6,18 @@ Results
 │   └── Stuck Fault Summary Report.png
 ├── Post-sim Result
 │   ├── Input Data
+│   │   ├── DM_32bit.txt
+│   │   └── IM_32bit.txt
 │   ├── Output Data
+│   │   ├── DM_out.dat
+│   │   ├── RF_out.dat
+│   │   ├── SW_out.dat
+│   │   └── WB_out.dat
 │   ├── Verification Data
+│   │   ├── expected_DM.dat
+│   │   ├── expected_RF.dat
+│   │   ├── expected_SW.dat
+│   │   └── expected_WB.dat
 │   └── README.md
 └── VLSI Implement 
     ├── Area
