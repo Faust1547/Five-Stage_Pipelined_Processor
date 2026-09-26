@@ -1,13 +1,15 @@
-# AES-128 Encryption & Decryption Engine 
+# Five-Stage Pipelined Processor
 
 ## Overview
-本專案以 AES-128 對稱式加密演算法為基礎，使用 Verilog 實現 Encryption、Decryption、Key Expansion 與 Galois Field Arithmetic 等核心模組，並完成 RTL 功能驗證。後續進一步採用 TSMC 90 nm 與 N16 ADFP 製程進行實體設計。
+本專案延伸課堂實作之五級 Pipeline CPU，將原先的 IM 與 DM 暫存器替換為實際 256 × 32 SRAM，並進一步導入 Design for Testability (DFT) 與 Scan Chain，使內部暫存器具備較佳的 Controllability 與 Observability，並透過 ATPG 進行 Stuck-at Fault 測試與 Fault Coverage 評估。
 
-## Algorithm
+## Architecture
 
-<img width="450" height="500" alt="image" src="https://github.com/user-attachments/assets/7971aa40-9af7-4970-a45d-de43cb052daa" />
+<img width="4113" height="1188" alt="image" src="https://github.com/user-attachments/assets/ada8b590-36e3-47a3-8c45-23de0a7b966b" />
+
+
 
 ## Results
-1. RTL Post-sim 執行結果。
-2. TSMC 90nm 1P9M 實體設計之時序、面積、功耗紀錄，以及晶片實現結果與 Partition 表示。
-3. TSMC 16nm ADFP 實體設計之時序、面積、功耗紀錄，以及數位 IP 實現結果。
+1. Post-sim 執行結果。
+2. Automatic test pattern generation 執行結果。
+3. TSMC 90nm 1P9M 實體設計之時序、面積、功耗紀錄，以及晶片實現結果與 Partition 表示。
